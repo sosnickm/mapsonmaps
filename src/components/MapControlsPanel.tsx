@@ -19,21 +19,52 @@ const MapControlsPanel: React.FC<MapControlsPanelProps> = ({
 }) => {
     return (
         <div className="space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow">
-                <h2 className="text-xl font-semibold mb-4">Map Selection</h2>
-                <MapSelector onSelect={onMapSelect} />
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow">
-                <h2 className="text-xl font-semibold mb-4">Projection Controls</h2>
-                <ProjectionControls onChange={onProjectionChange} />
+            {/* Map Selection Card */}
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                <div className="p-4 border-b border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900">Map Selection</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                        Choose a city to display on the map
+                    </p>
+                </div>
+                <div className="p-4">
+                    <MapSelector onSelect={onMapSelect} />
+                </div>
             </div>
             
             {selectedMap && (
-                <div className="bg-white p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Map Display</h2>
-                    <MapDragger mapData={selectedMap} projectionSettings={projectionSettings} />
-                </div>
+                <>
+                    {/* Projection Settings Card */}
+                    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                        <div className="p-4 border-b border-gray-200">
+                            <h3 className="text-lg font-semibold text-gray-900">Projection Settings</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                                Adjust how the map projection is displayed
+                            </p>
+                        </div>
+                        <div className="p-4">
+                            <ProjectionControls 
+                                onChange={onProjectionChange}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Map Display Card */}
+                    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                        <div className="p-4 border-b border-gray-200">
+                            <h3 className="text-lg font-semibold text-gray-900">Map Display</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                                Drag and position your selected map
+                            </p>
+                        </div>
+                        <div className="p-4">
+                            <MapDragger 
+                                mapData={selectedMap}
+                                projectionSettings={projectionSettings}
+                            />
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );
