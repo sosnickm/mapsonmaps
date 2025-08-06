@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Menu, X } from "lucide-react";
+import { Map as LeafletMap } from 'leaflet';
 import MapControlsPanel from './components/MapControlsPanel';
 import MapView from './components/MapView';
-import './App.css'
 import CountryShape from './components/CountryShape';
+import './App.css'
 
 interface SelectedCountry {
     id: string;
@@ -18,6 +19,7 @@ const App: React.FC = () => {
     const [projectionSettings, setProjectionSettings] = useState({});
     const [showControls, setShowControls] = useState(false);
     const [selectedCountries, setSelectedCountries] = useState<SelectedCountry[]>([]);
+    const mapRef = useRef<LeafletMap | null>(null);
 
     const handleMapSelect = (mapData: any) => {
         setSelectedMap(mapData);
@@ -25,6 +27,10 @@ const App: React.FC = () => {
 
     const handleProjectionChange = (newSettings: any) => {
         setProjectionSettings(newSettings);
+    };
+
+    const handleMapReady = (map: LeafletMap) => {
+        mapRef.current = map;
     };
 
     const handleCountrySelect = (countryData: any) => {
@@ -97,6 +103,7 @@ const App: React.FC = () => {
                 <MapView 
                     style={{ height: '100vh', width: '100vw', margin: 0, padding: 0 }}
                     onCountrySelect={handleCountrySelect}
+                    onMapReady={handleMapReady}
                 />
             </div>
             
@@ -107,16 +114,16 @@ const App: React.FC = () => {
                 </div>
             </div>
 
-            {/* Instructions overlay */}
+            {/* Instructions overlay
             {selectedCountries.length === 0 && (
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2" style={{ zIndex: 100 }}>
                     <div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-lg shadow-lg px-4 py-2">
                         <p className="text-sm text-gray-600">Double-click any country to create a shape</p>
                     </div>
                 </div>
-            )}
+            )} */}
 
-            {/* Hamburger Menu Button */}
+            {/* Hamburger Menu Button
             {!showControls && (
                 <button
                     onClick={() => setShowControls(true)}
@@ -125,7 +132,7 @@ const App: React.FC = () => {
                 >
                     <Menu className="w-6 h-6" />
                 </button>
-            )}
+            )} */}
 
             {/* Country Shapes - rendered on top */}
             {selectedCountries.map(country => (
@@ -136,8 +143,9 @@ const App: React.FC = () => {
                     position={country.position}
                     scale={country.scale}
                     exactDimensions={country.exactDimensions}
+                    map={mapRef.current ?? undefined}
                     onRemove={() => handleRemoveCountry(country.id)}
-                    onPositionUpdate={(newPosition: { x: number; y: number }) => handleUpdateCountryPosition(country.id, newPosition)}
+                    onPositionUpdate={(newPosition) => handleUpdateCountryPosition(country.id, newPosition)}
                 />
             ))}
 

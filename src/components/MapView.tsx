@@ -15,6 +15,19 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
+// Component to expose map instance to parent
+const MapInstanceProvider: React.FC<{ onMapReady: (map: L.Map) => void }> = ({ onMapReady }) => {
+    const map = useMap();
+    
+    React.useEffect(() => {
+        if (map) {
+            onMapReady(map);
+        }
+    }, [map, onMapReady]);
+    
+    return null;
+};
+
 // Component to add zoom control in bottom-right
 const ZoomControl: React.FC = () => {
     const map = useMap();
@@ -168,8 +181,14 @@ const CountryBoundaries: React.FC<{ onCountryDoubleClick: (countryData: any) => 
                         height: pixelHeight
                     },
                     mapBounds: {
-                        southWest: polygonBounds.getSouthWest(),
-                        northEast: polygonBounds.getNorthEast(),
+                        southWest: {
+                            lat: polygonBounds.getSouthWest().lat,
+                            lng: polygonBounds.getSouthWest().lng
+                        },
+                        northEast: {
+                            lat: polygonBounds.getNorthEast().lat,
+                            lng: polygonBounds.getNorthEast().lng
+                        },
                         southWestPixel: southWestPoint,
                         northEastPixel: northEastPoint
                     },
@@ -240,6 +259,7 @@ interface MapViewProps {
     className?: string;
     style?: React.CSSProperties;
     onCountrySelect?: (countryData: any) => void;
+    onMapReady?: (map: L.Map) => void;
 }
 
 const MapView: React.FC<MapViewProps> = ({ 
@@ -247,11 +267,18 @@ const MapView: React.FC<MapViewProps> = ({
     zoom = 2,
     className = "",
     style = { height: '100vh', width: '100%' },
-    onCountrySelect
+    onCountrySelect,
+    onMapReady
 }) => {
     const handleCountryDoubleClick = (countryData: any) => {
         if (onCountrySelect) {
             onCountrySelect(countryData);
+        }
+    };
+
+    const handleMapReady = (map: L.Map) => {
+        if (onMapReady) {
+            onMapReady(map);
         }
     };
 
@@ -275,6 +302,7 @@ const MapView: React.FC<MapViewProps> = ({
                 />
                 <ZoomControl />
                 <CountryBoundaries onCountryDoubleClick={handleCountryDoubleClick} />
+                {onMapReady && <MapInstanceProvider onMapReady={handleMapReady} />}
             </MapContainer>
         </div>
     );
